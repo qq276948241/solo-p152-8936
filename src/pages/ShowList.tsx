@@ -3,63 +3,44 @@ import ShowCard from '@/components/ShowCard';
 import SearchInput from '@/components/SearchInput';
 import StatusFilterBar from '@/components/StatusFilterBar';
 import EmptyState from '@/components/EmptyState';
-import type { ShowStatus } from '@/types';
+import { useShowFilter } from '@/hooks/useShowFilter';
 import { Music } from 'lucide-react';
-import { useMemo, useState } from 'react';
 
 export default function ShowList() {
   const { shows, searchKeyword, setSearchKeyword } = useAppStore();
-  const [statusFilter, setStatusFilter] = useState<ShowStatus | 'all'>('all');
-
-  const venueFiltered = useMemo(() => {
-    const keyword = searchKeyword.trim().toLowerCase();
-    const list = keyword
-      ? shows.filter((s) => s.venue.toLowerCase().includes(keyword))
-      : shows;
-    return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [shows, searchKeyword]);
-
-  const filteredShows = useMemo(() => {
-    if (statusFilter === 'all') return venueFiltered;
-    return venueFiltered.filter((s) => s.status === statusFilter);
-  }, [venueFiltered, statusFilter]);
-
-  const counts = useMemo(() => {
-    return {
-      all: venueFiltered.length,
-      upcoming: venueFiltered.filter((s) => s.status === 'upcoming').length,
-      ongoing: venueFiltered.filter((s) => s.status === 'ongoing').length,
-      completed: venueFiltered.filter((s) => s.status === 'completed').length,
-      cancelled: venueFiltered.filter((s) => s.status === 'cancelled').length,
-    };
-  }, [venueFiltered]);
+  const { filteredShows, activeStatus, setActiveStatus, statusCounts } = useShowFilter(
+    shows,
+    searchKeyword,
+  );
 
   return (
     <div className="page-container animate-fade-in">
-      <div className="mb-6 sm:mb-8">
+      <header className="mb-6 sm:mb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center shadow-lg">
             <Music className="w-6 h-6 text-white" strokeWidth={2.2} />
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">演出日程</h1>
-            <p className="text-sm text-white/60">共 {counts.all} 场演出，按时间倒序排列</p>
+            <p className="text-sm text-white/60">
+              共 {statusCounts.all} 场演出，按时间倒序排列
+            </p>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="space-y-3 mb-6">
+      <section className="space-y-3 mb-6">
         <SearchInput
           value={searchKeyword}
           onChange={setSearchKeyword}
           placeholder="输入场地名称搜索..."
         />
         <StatusFilterBar
-          active={statusFilter}
-          onChange={setStatusFilter}
-          counts={counts}
+          active={activeStatus}
+          onChange={setActiveStatus}
+          counts={statusCounts}
         />
-      </div>
+      </section>
 
       {filteredShows.length === 0 ? (
         <EmptyState

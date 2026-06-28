@@ -4,8 +4,8 @@ import { useAppStore } from '@/store/useAppStore';
 import MessageCard from '@/components/MessageCard';
 import EmptyState from '@/components/EmptyState';
 import StatusBadge from '@/components/StatusBadge';
+import { compareByDateDesc, cn } from '@/lib/utils';
 import { formatDate } from '@/utils/format';
-import { cn } from '@/lib/utils';
 
 type FilterMode = 'all' | 'starred';
 
@@ -13,7 +13,7 @@ export default function MessageBoard() {
   const { shows, getMessagesByShowId, toggleMessageStar } = useAppStore();
 
   const showsSorted = useMemo(
-    () => [...shows].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    () => [...shows].sort(compareByDateDesc),
     [shows],
   );
 

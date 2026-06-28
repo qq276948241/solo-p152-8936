@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Show, Message, ShowStatus } from '@/types';
 import { MOCK_SHOWS, MOCK_MESSAGES } from '@/data/mockData';
+import { compareByCreatedAtDesc, compareByDateDesc, filterShowsByVenue } from '@/lib/utils';
 
 interface AppState {
   shows: Show[];
@@ -48,15 +49,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   getMessagesByShowId: (showId) =>
     get()
       .messages.filter((m) => m.showId === showId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+      .sort(compareByCreatedAtDesc),
 
   getFilteredShows: () => {
     const { shows, searchKeyword } = get();
-    const keyword = searchKeyword.trim().toLowerCase();
-    const list = keyword
-      ? shows.filter((s) => s.venue.toLowerCase().includes(keyword))
-      : shows;
-    return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const matched = filterShowsByVenue(shows, searchKeyword);
+    return [...matched].sort(compareByDateDesc);
   },
 
   setSearchKeyword: (keyword) => set({ searchKeyword: keyword }),

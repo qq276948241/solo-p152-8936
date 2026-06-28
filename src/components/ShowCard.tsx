@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Ticket, ChevronRight } from 'lucide-react';
 import type { Show } from '@/types';
 import StatusBadge from './StatusBadge';
-import { formatDate, formatTime, formatPrice } from '@/utils/format';
+import { formatPrice } from '@/utils/format';
+import { formatShowTime } from '@/lib/utils';
 
 interface Props {
   show: Show;
@@ -11,6 +12,7 @@ interface Props {
 
 export default function ShowCard({ show, index = 0 }: Props) {
   const delayClass = `animate-delay-${Math.min(index * 100, 500)}` as const;
+  const { dateText, timeText } = formatShowTime(show.date);
 
   return (
     <Link
@@ -31,8 +33,8 @@ export default function ShowCard({ show, index = 0 }: Props) {
         <div className="flex items-center gap-3 text-white/80">
           <Calendar className="w-4 h-4 text-accent/80 flex-shrink-0" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <span className="font-medium">{formatDate(show.date)}</span>
-            <span className="text-white/50 text-xs sm:text-sm">{formatTime(show.date)}</span>
+            <span className="font-medium">{dateText}</span>
+            <span className="text-white/50 text-xs sm:text-sm">{timeText}</span>
           </div>
         </div>
 
