@@ -1,20 +1,11 @@
 import { useAppStore } from '@/store/useAppStore';
 import ShowCard from '@/components/ShowCard';
 import SearchInput from '@/components/SearchInput';
+import StatusFilterBar from '@/components/StatusFilterBar';
 import EmptyState from '@/components/EmptyState';
-import { SHOW_STATUS_LABELS } from '@/types';
 import type { ShowStatus } from '@/types';
-import { Music, Filter } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Music } from 'lucide-react';
 import { useMemo, useState } from 'react';
-
-const STATUS_FILTERS: Array<{ value: ShowStatus | 'all'; label: string }> = [
-  { value: 'all', label: '全部' },
-  { value: 'upcoming', label: SHOW_STATUS_LABELS.upcoming },
-  { value: 'ongoing', label: SHOW_STATUS_LABELS.ongoing },
-  { value: 'completed', label: SHOW_STATUS_LABELS.completed },
-  { value: 'cancelled', label: SHOW_STATUS_LABELS.cancelled },
-];
 
 export default function ShowList() {
   const { shows, searchKeyword, setSearchKeyword } = useAppStore();
@@ -57,43 +48,17 @@ export default function ShowList() {
         </div>
       </div>
 
-      <div className="space-y-4 mb-6">
+      <div className="space-y-3 mb-6">
         <SearchInput
           value={searchKeyword}
           onChange={setSearchKeyword}
           placeholder="输入场地名称搜索..."
         />
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          <Filter className="w-4 h-4 text-white/50 flex-shrink-0 ml-1" />
-          {STATUS_FILTERS.map((f) => {
-            const active = statusFilter === f.value;
-            const count = counts[f.value];
-            return (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => setStatusFilter(f.value)}
-                className={cn(
-                  'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 min-h-[40px]',
-                  active
-                    ? 'bg-accent text-white shadow-lg'
-                    : 'bg-surface/60 text-white/70 hover:text-white hover:bg-surface-light border border-white/5',
-                )}
-              >
-                {f.label}
-                <span
-                  className={cn(
-                    'ml-2 px-1.5 py-0.5 rounded-full text-xs',
-                    active ? 'bg-white/20' : 'bg-white/10',
-                  )}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <StatusFilterBar
+          active={statusFilter}
+          onChange={setStatusFilter}
+          counts={counts}
+        />
       </div>
 
       {filteredShows.length === 0 ? (
