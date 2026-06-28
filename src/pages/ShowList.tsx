@@ -7,11 +7,15 @@ import { useShowFilter } from '@/hooks/useShowFilter';
 import { Music } from 'lucide-react';
 
 export default function ShowList() {
-  const { shows, searchKeyword, setSearchKeyword } = useAppStore();
-  const { filteredShows, activeStatus, setActiveStatus, statusCounts } = useShowFilter(
-    shows,
+  const { shows } = useAppStore();
+  const {
+    filteredShows,
     searchKeyword,
-  );
+    setSearchKeyword,
+    activeStatus,
+    setActiveStatus,
+    statusCounts,
+  } = useShowFilter(shows);
 
   return (
     <div className="page-container animate-fade-in">
